@@ -1,0 +1,234 @@
+<!doctype html>
+<!-- Vị trí file: wp-content/gb-tools/seo-tools/mo-phong-mu-mau.html -->
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Công cụ mô phỏng mù màu online - Color Blindness Simulator</title>
+<meta name="description" content="Mô phỏng đa dạng các dạng chứng mù màu trực tuyến. Kiểm tra khả năng truy cập hình ảnh chuẩn UX/UI và WCAG bảo mật 100% trên trình duyệt.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.1.11"></script>
+<style type="text/tailwindcss">
+  @theme {
+    --font-sans: Roboto, ui-sans-serif, system-ui, sans-serif;
+    --color-primary: #fdca1e; --color-primary-hover: #e8b008; --color-primary-soft: #fffbeb;
+    --color-primary-ink: #9c6406; --color-ink: #0f172a; --color-neutral: #e2e8f0;
+  }
+</style>
+</head>
+<body class="bg-white font-sans text-ink antialiased" onpaste="handlePaste(event)">
+<main class="mx-auto max-w-5xl p-4 sm:p-6 space-y-6">
+  
+  <div class="bg-white border border-neutral rounded-2xl p-6 shadow-xs space-y-6">
+    
+    <!-- Khung tải lên tệp ảnh (Drag & Drop & Paste & Click) -->
+    <div id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" class="border-2 border-dashed border-neutral hover:border-primary rounded-2xl p-8 transition-colors cursor-pointer bg-slate-50/40 flex flex-col items-center justify-center space-y-3 text-center" onclick="document.getElementById('fileInput').click()">
+      
+      <!-- Icon tải lên -->
+      <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+      
+      <div class="space-y-1">
+        <div class="font-bold text-sm text-ink">Nhấp chuột để tải lên</div>
+        <div class="text-xs text-slate-400">hoặc chèn một hình ảnh để mô phỏng chứng mù màu.</div>
+        <div class="text-xs text-slate-400">hoặc dán từ clipboard</div>
+        <div class="text-xs text-slate-500 pt-1">Hỗ trợ thao tác nhấp chuột, kéo thả hoặc dán.</div>
+      </div>
+
+      <button type="button" class="mt-2 min-h-10 rounded-xl bg-primary px-6 font-bold text-xs text-ink hover:bg-primary-hover shadow-xs cursor-pointer">
+        Chọn tệp
+      </button>
+
+      <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
+    </div>
+
+    <!-- Khu vực hiển thị kết quả mô phỏng (Ẩn trước khi có ảnh) -->
+    <div id="resultSection" class="space-y-6 hidden">
+      
+      <!-- Thanh danh sách chip chọn dạng mô phỏng mù màu -->
+      <div class="space-y-2">
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="btn-protanopia" onclick="setSimType('protanopia')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral">Protanopia</button>
+          <button type="button" id="btn-deuteranopia" onclick="setSimType('deuteranopia')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral">Thị lực màu xanh lục</button>
+          <button type="button" id="btn-tritanopia" onclick="setSimType('tritanopia')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral">Tritanopia</button>
+          <button type="button" id="btn-achromatopsia" onclick="setSimType('achromatopsia')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral">mù màu</button>
+          <button type="button" id="btn-protanomaly" onclick="setSimType('protanomaly')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral">Protanomaly</button>
+          <button type="button" id="btn-deuteranomaly" onclick="setSimType('deuteranomaly')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral">Dị thường Deuteran</button>
+          <button type="button" id="btn-tritanomaly" onclick="setSimType('tritanomaly')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral">Tritanomaly</button>
+          <button type="button" id="btn-total" onclick="setSimType('total')" class="px-3.5 py-1.5 rounded-full font-bold text-xs bg-primary text-ink shadow-xs cursor-pointer transition-colors border border-amber-300">bệnh mù màu</button>
+        </div>
+        <div id="modeDescription" class="text-xs text-slate-500 italic pt-1">Mô phỏng bệnh mù màu toàn phần.</div>
+      </div>
+
+      <!-- Bố cục so sánh 2 khung: Nguyên bản vs Mô phỏng -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+        
+        <!-- Nguyên bản -->
+        <div class="space-y-3">
+          <div class="font-bold text-xs text-slate-600 text-center uppercase tracking-wider">Nguyên bản</div>
+          <div class="rounded-xl overflow-hidden border border-neutral bg-slate-50 flex items-center justify-center min-h-[260px] max-h-[400px] p-2">
+            <img id="imgOriginal" src="" alt="Nguyên bản" class="max-h-[380px] object-contain">
+          </div>
+        </div>
+
+        <!-- Mô phỏng -->
+        <div class="space-y-3">
+          <div id="simTitleLabel" class="font-bold text-xs text-slate-600 text-center uppercase tracking-wider">Mô phỏng ( bệnh mù màu )</div>
+          <div class="rounded-xl overflow-hidden border border-neutral bg-slate-50 flex items-center justify-center min-h-[260px] max-h-[400px] p-2">
+            <canvas id="simCanvas" class="max-h-[380px] max-w-full object-contain"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Hàng nút hành động phía dưới -->
+      <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-neutral">
+        <button type="button" onclick="downloadSimulatedImage()" class="min-h-10 rounded-xl bg-primary px-5 font-bold text-xs text-ink hover:bg-primary-hover shadow-xs cursor-pointer flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Tải ảnh mô phỏng
+        </button>
+        <button type="button" onclick="resetAll()" class="min-h-10 rounded-xl border border-neutral px-4 font-semibold text-xs hover:border-primary bg-slate-100 cursor-pointer">
+          Đổi ảnh khác
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+<script>
+  let originalImage = null;
+  let currentKey = 'total';
+
+  const simConfig = {
+    protanopia: { name: 'Protanopia (Mù đỏ)', matrix: [0.56667, 0.43333, 0.0, 0.55833, 0.44167, 0.0, 0.0, 0.24167, 0.75833] },
+    deuteranopia: { name: 'Thị lực màu xanh lục', matrix: [0.625, 0.375, 0.0, 0.7, 0.3, 0.0, 0.0, 0.3, 0.7] },
+    tritanopia: { name: 'Tritanopia', matrix: [0.95, 0.05, 0.0, 0.0, 0.433, 0.567, 0.0, 0.475, 0.525] },
+    achromatopsia: { name: 'mù màu', matrix: [0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114] },
+    protanomaly: { name: 'Protanomaly', matrix: [0.817, 0.183, 0.0, 0.333, 0.667, 0.0, 0.0, 0.125, 0.875] },
+    deuteranomaly: { name: 'Dị thường Deuteran', matrix: [0.8, 0.2, 0.0, 0.258, 0.742, 0.0, 0.0, 0.142, 0.858] },
+    tritanomaly: { name: 'Tritanomaly', matrix: [0.967, 0.033, 0.0, 0.0, 0.733, 0.267, 0.0, 0.183, 0.817] },
+    total: { name: 'bệnh mù màu', matrix: [0.299, 0.587, 0.114, 0.299, 0.587, 0.114, 0.299, 0.587, 0.114] }
+  };
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.classList.add('border-primary', 'bg-primary-soft/30');
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('border-primary', 'bg-primary-soft/30');
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('border-primary', 'bg-primary-soft/30');
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      processImageFile(e.dataTransfer.files[0]);
+    }
+  }
+
+  function handleFileSelect(e) {
+    if (e.target.files && e.target.files[0]) {
+      processImageFile(e.target.files[0]);
+    }
+  }
+
+  function handlePaste(e) {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf('image') !== -1) {
+        processImageFile(items[i].getAsFile());
+        break;
+      }
+    }
+  }
+
+  function processImageFile(file) {
+    if (!file.type.startsWith('image/')) {
+      alert('Vui lòng chọn tệp hình ảnh hợp lệ!');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        originalImage = img;
+        document.getElementById('imgOriginal').src = e.target.result;
+        document.getElementById('resultSection').classList.remove('hidden');
+        renderSimulation();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function setSimType(key) {
+    currentKey = key;
+    const keys = Object.keys(simConfig);
+
+    keys.forEach(k => {
+      const btn = document.getElementById('btn-' + k);
+      if (k === key) {
+        btn.className = 'px-3.5 py-1.5 rounded-full font-bold text-xs bg-primary text-ink shadow-xs cursor-pointer transition-colors border border-amber-300';
+      } else {
+        btn.className = 'px-3.5 py-1.5 rounded-full font-bold text-xs bg-slate-100 text-slate-700 hover:bg-amber-50 cursor-pointer transition-colors border border-neutral';
+      }
+    });
+
+    const cfg = simConfig[key];
+    document.getElementById('modeDescription').textContent = `Mô phỏng dạng: ${cfg.name}.`;
+    document.getElementById('simTitleLabel').textContent = `Mô phỏng ( ${cfg.name} )`;
+
+    renderSimulation();
+  }
+
+  function renderSimulation() {
+    if (!originalImage) return;
+
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = originalImage.naturalWidth;
+    canvas.height = originalImage.naturalHeight;
+
+    ctx.drawImage(originalImage, 0, 0);
+
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imgData.data;
+    const matrix = simConfig[currentKey].matrix;
+
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+
+      data[i]     = Math.min(255, Math.max(0, r * matrix[0] + g * matrix[1] + b * matrix[2]));
+      data[i + 1] = Math.min(255, Math.max(0, r * matrix[3] + g * matrix[4] + b * matrix[5]));
+      data[i + 2] = Math.min(255, Math.max(0, r * matrix[6] + g * matrix[7] + b * matrix[8]));
+    }
+
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  function downloadSimulatedImage() {
+    const canvas = document.getElementById('simCanvas');
+    if (!canvas || !originalImage) return;
+    
+    const url = canvas.toDataURL('image/png');
+    const a = Object.assign(document.createElement('a'), { href: url, download: `colorblind-${currentKey}.png` });
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  function resetAll() {
+    document.getElementById('fileInput').value = '';
+    document.getElementById('resultSection').classList.add('hidden');
+    originalImage = null;
+  }
+</script>
+</body>
+</html>
